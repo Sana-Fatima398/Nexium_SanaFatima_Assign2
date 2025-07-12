@@ -3,6 +3,7 @@ import React from 'react';
 import { useState } from 'react';
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import dictionary from './dictionary';
 
 import {Button} from '@/components/ui/button';
 import {
@@ -11,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 
 export function ModeToggle() {
   const { setTheme } = useTheme()
@@ -48,7 +50,7 @@ export function Navbar () {
 
         {/* Navigation Links */}
         <div className="hidden md:flex space-x-6">
-          <a href="/" className="text-white hover:text-gray-200 transition">Home</a>
+          <a href="/app/" className="text-white hover:text-gray-200 transition">Home</a>
           <a href="/about" className="text-white hover:text-gray-200 transition">About</a>
           <a href="/summaries" className="text-white hover:text-gray-200 transition">Summaries</a>
           <a href="/contact" className="text-white hover:text-gray-200 transition">Contact</a>
@@ -76,6 +78,7 @@ export default function Summarizers(){
   const [url, setUrl] = useState('');
   const [scrapedText, setScrapedText] = useState('');
   const [summary, setSummary] = useState('');
+  const [urduTranslation, setUrduTranslation] = useState('');
 
   const summarizeText = (text: string): string => {
     const sentences = text.split('.').filter((s) => s.trim());
@@ -84,6 +87,27 @@ export default function Summarizers(){
       .slice(0, 50); // Take first two meaningful sentences
     return keySentences.join('. ') + (keySentences.length > 0 ? '.' : '');
   };
+
+  const translateToUrdu = (text: string): string => {
+    let translated = text;
+    for (const [en, ur] of Object.entries(dictionary)) {
+      translated = translated.replace(new RegExp(`\\b${en}\\b`, 'gi'), ur as string);
+    }
+    // Manual grammar adjustment for Urdu (SOV structure)
+    const sentences = translated.split('.').filter((s) => s.trim());
+    const adjustedSentences = sentences.map((s) => {
+      const words = s.trim().split(' ');
+      if (words.length > 2) {
+        const subject = words.slice(0, -2).join(' ');
+        const verb = words[words.length - 1];
+        const object = words[words.length - 2];
+        return `${subject} ${object} ${verb}`;
+      }
+      return s;
+    });
+    return adjustedSentences.join('۔ ') + (adjustedSentences.length > 0 ? '۔' : '');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
      try {
@@ -98,6 +122,7 @@ export default function Summarizers(){
       setScrapedText(data.text);
       const summaryText = summarizeText(data.text);
       setSummary(summaryText);
+      setUrduTranslation(translateToUrdu(summaryText));
      
     } 
     catch (err) {
@@ -135,6 +160,10 @@ export default function Summarizers(){
       <div className='m-10 p-10 bg-secondary rounded-4xl shadow-lg'>
         <h2 className='text-4xl text-center font-bold m-5'>Summary</h2>
         <p className='text-justify text-lg mb-4'>{summary}</p>
+      </div>
+      <div className='m-10 p-10 bg-secondary rounded-4xl shadow-lg'>
+        <h2 className='text-4xl text-center font-bold m-5'>Urdu Translation</h2>
+        <p className='text-justify text-lg mb-4'>{urduTranslation}</p>
       </div>
       <footer className='bg-primary text-white p-4 mt-10 text-center'>
         <p>&copy; {new Date().getFullYear()} Blog Summarizer. All rights reserved.</p>
