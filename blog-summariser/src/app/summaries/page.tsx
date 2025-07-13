@@ -1,79 +1,19 @@
 'use client';
-import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
-import { createClient } from '@/utils/supabase/client';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { createClient } from '@/utils/supabase/client'; 
+import { Navbar } from '@/components/ui/navbar'; 
 
-export function ModeToggle() {
-  const { setTheme } = useTheme();
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
 
-export function Navbar() {
-  return (
-    <nav className="bg-primary p-4 mb-7 shadow-md">
-      <div className="container mx-auto flex items-center justify-between">
-        <div className="text-2xl font-bold text-white">
-          Blog Summarizer
-        </div>
-        <div className="hidden md:flex space-x-6">
-        <Link href="/" className="text-white hover:text-gray-200 transition">Home</Link>
-     
-          <a href="/about" className="text-white hover:text-gray-200 transition">About</a>
-          <a href="/summaries" className="text-white hover:text-gray-200 transition">Summaries</a>
-          <a href="/contact" className="text-white hover:text-gray-200 transition">Contact</a>
-        </div>
-        <div>
-          <ModeToggle />
-        </div>
-        <div className="md:hidden">
-          <button className="text-white focus:outline-none">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </nav>
-  );
-}
 
-type Summary = {
-  id: number;
-  text: string;
-  created_at: string;
-};
 
 export default function GetSummaries() {
+  
+  type Summary = {
+    id: number;
+    text: string;
+    created_at: string;
+  };
+
   const [summaries, setSummaries] = useState<Summary[]>([]);
   const supabase = createClient();
 
