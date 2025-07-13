@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import dictionary from './dictionary';
+import { createClient } from '@/utils/supabase/client';
 
 import {Button} from '@/components/ui/button';
 import {
@@ -43,12 +44,12 @@ export function Navbar () {
   return (
     <nav className="bg-primary p-4 mb-7 shadow-md">
       <div className="container mx-auto flex items-center justify-between">
-        {/* Logo/Title */}
+
         <div className="text-2xl font-bold text-white">
           Blog Summarizer
         </div>
 
-        {/* Navigation Links */}
+  
         <div className="hidden md:flex space-x-6">
           <a href="/app/" className="text-white hover:text-gray-200 transition">Home</a>
           <a href="/about" className="text-white hover:text-gray-200 transition">About</a>
@@ -56,12 +57,12 @@ export function Navbar () {
           <a href="/contact" className="text-white hover:text-gray-200 transition">Contact</a>
         </div>
 
-        {/* Mode Toggle */}
+      
         <div>
           <ModeToggle />
         </div>
 
-        {/* Mobile Menu Button */}
+      
         <div className="md:hidden">
           <button className="text-white focus:outline-none">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,12 +80,13 @@ export default function Summarizers(){
   const [scrapedText, setScrapedText] = useState('');
   const [summary, setSummary] = useState('');
   const [urduTranslation, setUrduTranslation] = useState('');
+  const supabase = createClient();
 
   const summarizeText = (text: string): string => {
     const sentences = text.split('.').filter((s) => s.trim());
     const keySentences = sentences
-      .filter((s) => s.split(' ').length > 5) // Keep longer sentences
-      .slice(0, 50); // Take first two meaningful sentences
+      .filter((s) => s.split(' ').length > 7) 
+      .slice(0, 10); 
     return keySentences.join('. ') + (keySentences.length > 0 ? '.' : '');
   };
 
@@ -93,7 +95,7 @@ export default function Summarizers(){
     for (const [en, ur] of Object.entries(dictionary)) {
       translated = translated.replace(new RegExp(`\\b${en}\\b`, 'gi'), ur as string);
     }
-    // Manual grammar adjustment for Urdu (SOV structure)
+    
     const sentences = translated.split('.').filter((s) => s.trim());
     const adjustedSentences = sentences.map((s) => {
       const words = s.trim().split(' ');
@@ -123,6 +125,17 @@ export default function Summarizers(){
       const summaryText = summarizeText(data.text);
       setSummary(summaryText);
       setUrduTranslation(translateToUrdu(summaryText));
+      
+      const { error } = await supabase
+        .from('Summary')
+        .insert([
+          { text:summaryText },
+        ]);
+        if(error){
+        console.error('Supabase insert error:', error);
+        alert('Failed to save summary to database. Check console for details.');
+        }
+
      
     } 
     catch (err) {
@@ -153,6 +166,10 @@ export default function Summarizers(){
           <Button className='bg-primary text-black w-full hover:bg-violet-400'>Make scrape</Button>
         </form>
       </div>
+        <div className='m-10 p-10 bg-secondary rounded-4xl shadow-lg'>
+        <h2 className='text-4xl text-center font-bold m-5'>Urdu Translation</h2>
+        <p className='text-justify text-lg mb-4'>{urduTranslation}</p>
+      </div>
       <div className='m-10 p-10 bg-secondary rounded-4xl shadow-lg'>
         <h2 className='text-4xl text-center font-bold m-5'>Scraped Text</h2>
         <p className='text-justify text-lg mb-4'>{scrapedText}</p>
@@ -161,10 +178,7 @@ export default function Summarizers(){
         <h2 className='text-4xl text-center font-bold m-5'>Summary</h2>
         <p className='text-justify text-lg mb-4'>{summary}</p>
       </div>
-      <div className='m-10 p-10 bg-secondary rounded-4xl shadow-lg'>
-        <h2 className='text-4xl text-center font-bold m-5'>Urdu Translation</h2>
-        <p className='text-justify text-lg mb-4'>{urduTranslation}</p>
-      </div>
+    
       <footer className='bg-primary text-white p-4 mt-10 text-center'>
         <p>&copy; {new Date().getFullYear()} Blog Summarizer. All rights reserved.</p>
         <p className='text-sm'>Created by <a href=''></a></p>
