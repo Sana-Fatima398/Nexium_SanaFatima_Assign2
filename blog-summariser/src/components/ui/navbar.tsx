@@ -7,15 +7,13 @@ function Navbar() {
   return (
     <nav className="bg-primary p-4 mb-7 shadow-md">
       <div className="container mx-auto flex items-center justify-between">
-        <div className="text-2xl font-bold text-white">
+        <div className="flex items-center gap-2 text-2xl font-bold text-white">
+        <img width="24" height="24" src="https://img.icons8.com/office/40/making-notes.png" alt="making-notes" aria-hidden="true"/>
           Blog Summarizer
         </div>
         <div className="hidden md:flex space-x-6">
-        <Link href="/" className="text-white hover:text-gray-200 transition">Home</Link>
-     
-          <a href="/about" className="text-white hover:text-gray-200 transition">About</a>
+        <Link href="/" className="text-white hover:text-gray-200 transition">Home</Link>    
           <a href="/summaries" className="text-white hover:text-gray-200 transition">Summaries</a>
-          <a href="/contact" className="text-white hover:text-gray-200 transition">Contact</a>
         </div>
         <div>
           <ModeToggle />

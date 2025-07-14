@@ -5,6 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/ui/navbar';  
 import dictionary from './dictionary';
 import { createClient } from '@/utils/supabase/client';
+import axios from 'axios';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 
 
 export default function Summarizers(){
@@ -44,7 +51,12 @@ export default function Summarizers(){
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    if (url === '') {
+      alert('Please enter a valid URL.');
+      return;
+    }
     e.preventDefault();
+    let temp = "";
      try {
       const response = await fetch('/api', {
         method: 'POST',
@@ -53,7 +65,7 @@ export default function Summarizers(){
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to scrape');
-      
+      temp = data.text;
       setScrapedText(data.text);
       const summaryText = summarizeText(data.text);
       setSummary(summaryText);
@@ -68,8 +80,7 @@ export default function Summarizers(){
         console.error('Supabase insert error:', error);
         alert('Failed to save summary to database. Check console for details.');
         }
-
-     
+   
     } 
     catch (err) {
       console.error('Error:', err);
@@ -77,6 +88,18 @@ export default function Summarizers(){
       setSummary('');
       alert('Failed to scrape the URL. Please check the console for details.');
     } 
+
+    try{
+         const response2 = await axios.post('/api/blog', { url, text: temp });    
+         console.log(response2.data);
+      if (response2.status !== 200) {
+        console.log('Failed to save blog data');
+      }
+    }
+    catch (error) {
+      console.error('Error saving blog data:', error);
+      alert('Failed to save blog data. Please check the console for details.');
+    }
   }
   return (
     <div className=''>
@@ -87,7 +110,7 @@ export default function Summarizers(){
         <p className='text-center text-lg mb-8'>Enter a blog URL to get a concise summary of its content.</p>
         <form onSubmit={handleSubmit}>
           <textarea
-          className='bg-white w-full h-20 p-4 rounded-sm'
+          className='w-full h-20 p-4 rounded-sm'
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder=" Enter blog URL (e.g., https://example.com/blog)"
@@ -96,25 +119,42 @@ export default function Summarizers(){
             
           </textarea>
 
-          <Button className='bg-primary text-black w-full hover:bg-violet-400'>Make scrape</Button>
+          <Button className='bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:bg-gradient-to-r hover:from-violet-600 hover:to-fuchsia-600 text-black w-full transition-colors duration-300'>Make Summary</Button>
+          
         </form>
       </div>
-        <div className='m-10 p-10 bg-secondary rounded-4xl shadow-lg'>
-        <h2 className='text-4xl text-center font-bold m-5'>Urdu Translation</h2>
-        <p className='text-justify text-lg mb-4'>{urduTranslation}</p>
-      </div>
-      <div className='m-10 p-10 bg-secondary rounded-4xl shadow-lg'>
-        <h2 className='text-4xl text-center font-bold m-5'>Scraped Text</h2>
-        <p className='text-justify text-lg mb-4'>{scrapedText}</p>
-      </div>
-      <div className='m-10 p-10 bg-secondary rounded-4xl shadow-lg'>
-        <h2 className='text-4xl text-center font-bold m-5'>Summary</h2>
-        <p className='text-justify text-lg mb-4'>{summary}</p>
-      </div>
+      
+        <Accordion type="single" collapsible defaultValue="item-1">
+          
+          <AccordionItem value="item-1" className='m-10 p-1 bg-secondary rounded-2xl shadow-lg' >
+            <AccordionTrigger className='text-3xl text-center font-bold m-3 ms-8 hover:no-underline'>Urdu Translation</AccordionTrigger>
+            <AccordionContent className='text-justify text-lg m-8 ms-3  mt-0 p-4'>
+              {urduTranslation}
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="item-2" className='m-10 p-1 bg-secondary rounded-2xl shadow-lg'>
+          <AccordionTrigger className='text-3xl text-center font-bold m-3 ms-8 hover:no-underline'>Summary</AccordionTrigger>
+          <AccordionContent className='text-justify text-lg m-8 ms-3  mt-0 p-4'>
+            {summary}
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="item-3" className='m-10 p-1 bg-secondary rounded-2xl shadow-lg'>
+          <AccordionTrigger className='text-3xl text-center font-bold m-3 ms-8 hover:no-underline'>Scrape Text</AccordionTrigger>
+          <AccordionContent className='text-justify text-lg m-8 ms-3  mt-0 p-4'>
+            {scrapedText}
+          </AccordionContent>
+        </AccordionItem>
+      
+
+      </Accordion>
+        
+     
     
       <footer className='bg-primary text-white p-4 mt-10 text-center'>
         <p>&copy; {new Date().getFullYear()} Blog Summarizer. All rights reserved.</p>
-        <p className='text-sm'>Created by <a href=''></a></p>
+        <p className='text-sm'>Created by Sana Fatima</p>
         </footer>
     </div>);
 }

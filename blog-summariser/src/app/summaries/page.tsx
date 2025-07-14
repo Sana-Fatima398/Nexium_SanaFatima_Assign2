@@ -38,21 +38,21 @@ export default function GetSummaries() {
     <div>
       <Navbar />
       <div className="container mx-auto p-10">
-        <h1 className="text-5xl text-center font-bold mb-10">Saved Summaries</h1>
+        <h1 className="text-5xl text-center font-bold">Saved Summaries</h1>
    
       </div>
-      <div className="m-10 p-10 bg-secondary rounded-4xl shadow-lg">
+      <div className="m-8 p-10">
       
         {summaries.length === 0 ? (
           <p className="text-center text-lg mb-4">Loading Summaries ...</p>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-6">
             {summaries.map((item) => (
-              <div key={item.id} className="border border-gray-200 dark:border-gray-700 p-4 rounded-lg">
-              
-                <p><strong>Summary:</strong> {item.text}</p>
+              <div key={item.id} className="border bg-secondary border-gray-200 dark:border-gray-700 p-4 rounded-lg shadow-lg">
+              <h2 className='font-bold m-2'>Summary:</h2>
+                <p className='m-2 text-justify'>{item.text}</p>
            
-                <p><strong>Created:</strong> {new Date(item.created_at).toLocaleString('en-US', { timeZone: 'Asia/Karachi' })}</p>
+                <p className='m-2'><strong>Created:</strong> {new Date(item.created_at).toLocaleString('en-US', { timeZone: 'Asia/Karachi' })}</p>
               </div>
             ))}
           </div>
@@ -60,7 +60,7 @@ export default function GetSummaries() {
       </div>
       <footer className="bg-primary text-white p-4 mt-10 text-center">
         <p>© {new Date().getFullYear()} Blog Summarizer. All rights reserved.</p>
-        <p className="text-sm">Created by <a href=""></a></p>
+        <p className="text-sm">Created by Sana Fatima</p>
       </footer>
     </div>
   );
