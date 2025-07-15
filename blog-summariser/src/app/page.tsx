@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/ui/navbar';  
 import dictionary from './dictionary';
 import { createClient } from '@/utils/supabase/client';
+
 import axios from 'axios';
 import {
   Accordion,
@@ -14,11 +15,13 @@ import {
 } from "@/components/ui/accordion"
 
 
+
 export default function Summarizers(){
 
   const [url, setUrl] = useState('');
   const [scrapedText, setScrapedText] = useState('');
   const [summary, setSummary] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [urduTranslation, setUrduTranslation] = useState('');
   const supabase = createClient();
 
@@ -51,11 +54,12 @@ export default function Summarizers(){
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (url === '') {
       alert('Please enter a valid URL.');
       return;
     }
-    e.preventDefault();
+    setIsLoading(true);
     let temp = "";
      try {
       const response = await fetch('/api', {
@@ -88,6 +92,7 @@ export default function Summarizers(){
       setSummary('');
       alert('Failed to scrape the URL. Please check the console for details.');
     } 
+    setIsLoading(false);
 
     try{
          const response2 = await axios.post('/api/blog', { url, text: temp });    
@@ -100,6 +105,9 @@ export default function Summarizers(){
       console.error('Error saving blog data:', error);
       alert('Failed to save blog data. Please check the console for details.');
     }
+
+      
+    
   }
   return (
     <div className=''>
@@ -122,7 +130,11 @@ export default function Summarizers(){
           <Button className='bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:bg-gradient-to-r hover:from-violet-600 hover:to-fuchsia-600 text-black w-full transition-colors duration-300'>Make Summary</Button>
           
         </form>
+        {isLoading && (
+        <div className="progress-bar w-[60%] mt-5"></div>
+        )}
       </div>
+      
       
         <Accordion type="single" collapsible defaultValue="item-1">
           

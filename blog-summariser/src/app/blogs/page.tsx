@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Navbar } from '@/components/ui/navbar'; 
-
+import {Loader2Icon } from "lucide-react";
 
 interface Blog {
   _id: string,
@@ -43,7 +43,7 @@ export default function GetBlogs() {
           <div className="m-8 p-10">
             {errors && <p style={{ color: "red" }}>{errors}</p>}
             {blogs.length === 0 ? (
-                <p className="text-center text-lg mb-4">Loading Blogs ...</p>
+                <div className='text-center text-lg mb-4 flex justify-center'>Loading Blogs <Loader2Icon className="animate-spin ms-3" /></div>
               ) : (
                 <div className="grid gap-6">
                   {blogs.map((blog) => (

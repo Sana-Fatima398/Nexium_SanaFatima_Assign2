@@ -120,3 +120,32 @@
     @apply bg-background text-foreground;
   }
 }
+
+.progress-bar {
+  width: 100%;
+  height: 0.5rem;
+  background-color: #e5e7eb; 
+  border-radius: 9999px; 
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 50%; 
+  background-color: violet; 
+  animation: moveLeftToRight 1.5s linear infinite;
+}
+
+@keyframes moveLeftToRight {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}

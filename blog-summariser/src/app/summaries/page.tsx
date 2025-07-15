@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client'; 
 import { Navbar } from '@/components/ui/navbar'; 
-
+import {Loader2Icon } from "lucide-react";
 
 
 
@@ -44,7 +44,8 @@ export default function GetSummaries() {
       <div className="m-8 p-10">
       
         {summaries.length === 0 ? (
-          <p className="text-center text-lg mb-4">Loading Summaries ...</p>
+          <div className='text-center text-lg mb-4 flex justify-center'>Loading Summaries <Loader2Icon className="animate-spin ms-3" /></div>
+        
         ) : (
           <div className="grid gap-6">
             {summaries.map((item) => (
