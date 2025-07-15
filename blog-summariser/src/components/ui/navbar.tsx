@@ -14,6 +14,7 @@ function Navbar() {
         <div className="hidden md:flex space-x-6">
         <Link href="/" className="text-white hover:text-gray-200 transition">Home</Link>    
           <a href="/summaries" className="text-white hover:text-gray-200 transition">Summaries</a>
+          <a href="/blogs" className="text-white hover:text-gray-200 transition">Blogs</a>
         </div>
         <div>
           <ModeToggle />
